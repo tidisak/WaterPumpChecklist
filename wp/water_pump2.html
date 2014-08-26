@@ -1,0 +1,1486 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Service Pump Division</title>
+<link rel="stylesheet" type="text/css" href="../assets/jquery.signaturepad.css">
+<link rel="stylesheet" type="text/css" href="../css/jquery.mobile-1.4.2.min.css">
+<link rel="stylesheet" href="../css/jquery.mobile.datepicker.theme.css" />
+<link rel="stylesheet" href="../css/jquery.mobile.datepicker.css" />
+<script src="../js/jquery-1.10.2.min.js"></script>
+<script src="../js/jqueryui/jquery-ui/datepicker.js"></script>
+<script src="../js/jquery.mobile-1.4.2.min.js"></script>
+<script src="../js/datepicker/jquery.mobile.datepicker.js"></script>
+<script type="text/javascript">
+	
+$(function($){
+	var WpsigCustomer_2 = document.getElementById("WpsigCustomer_2");
+	var WpsigTechnician_2 = document.getElementById("WpsigTechnician_2");
+	var editor = document.getElementById("summary");
+	
+	var fillForm = function(form, data)
+	{
+        $.each(data, function(i, field) {
+			if(field.name == "summary")
+			{
+				editor.value = field.value;
+			}
+            $(form+' input[name="'+field.name+'"]').val(field.value);
+        });
+    }
+	
+	
+	/* สร้างฟังก์ชันสำหรับบันทึกข้อมูลจากฟอร์มลงใน localStorage */
+    var saveFormData = function(form){
+		
+		var elements = [],
+            id = '',
+            value = '',
+            text = '';
+
+        // push values of checkboxes and radio buttons into an array
+        $("[type=radio]").each(function () {
+            id = $(this)[0].id;
+            value = $(this).prop("checked");
+            text = $(this).next('label').text();
+            elements.push({
+                "id": id,
+                    "value": value,
+                    "text": text
+            });
+        });
+        // convert array into a string
+		
+        // in order store it into localStorage
+        localStorage["values"] = JSON.stringify(elements);
+        data = form.serializeArray();
+        localStorage.setItem('wp_data2', JSON.stringify(data));
+		localStorage.setItem('branch', document.getElementById("branch").value);
+		localStorage.setItem('wp_sigCus_2', document.getElementById('wp_2_cus_pad').toDataURL("image/png"));
+		localStorage.setItem('wp_sigTech_2', document.getElementById('wp_2_tech_pad').toDataURL("image/png"));
+    }
+	
+	/* ตรวจสอบว่ามีข้อมูลเก็บไว้ใน localStorage แล้วหรือยัง? */
+    if(localStorage.getItem('wp_data2') != null){
+        var read_array = JSON.parse(localStorage["values"]);
+
+        // check/uncheck checkboxes and radio buttons
+        $.each(read_array, function (e, v) {
+            var check_id = "#" + v.id,
+                check_value = v.value,
+                check_text = v.text;
+            $(check_id).prop("checked", check_value).checkboxradio("refresh");
+        });
+        fillForm('.form_water_pump2', JSON.parse(localStorage.getItem('wp_data2')));
+		$("#br_result").text(localStorage.getItem('branch'));
+		WpsigCustomer_2.setAttribute("src",localStorage.getItem('wp_sigCus_2'))
+		WpsigTechnician_2.setAttribute("src",localStorage.getItem('wp_sigTech_2'))
+		
+    }
+	
+	/* จะทำอะไร เมื่อ user กดปุ่ม submit ฟอร์ม? */
+    $('.form_water_pump2').on('submit', function(event){
+        /* บันทึกข้อมูลจากฟอร์มลงใน localStorage */
+			if($("#job_no").val()!= '' || $("#cust_code").val()!= '')
+			{
+				saveFormData($(this));
+				window.open('water_pump2.html','_self');
+			}
+			else
+			{
+				alert('!!! คุณกรอกข้อมูลไม่ครบ')
+				window.open('water_pump2.html','_self');
+			}
+    });
+});
+
+function savetomm()
+{
+	$.ajax({
+				  type: "POST",
+				  url: "http://192.168.0.33/mm/save_wp_to_mm.php",
+				  data: { 
+				  			sigCus: localStorage.getItem('wp_sigCus_2'),
+							sigTech : localStorage.getItem('wp_sigTech_2'),
+							wp_pm_job_no : $("#job_no").val(),
+							wp_pm_service_type : $('#service_type').val(),
+							wp_pm_cust_name : $("#customer_name").val(),
+							wp_pm_cust_code : $("#cust_code").val(),
+							wp_pm_pump_brand : $("#wp_pm_pump_brand").val(),
+							wp_pm_pump_type : $("#wp_pm_pump_type").val(),
+							wp_pm_pump_model : $("#wp_pm_pump_model").val(),
+							wp_pm_pump_sn : $("#wp_pm_pump_sn").val(),
+							wp_pm_pump_kwhp : $("#wp_pm_pump_kwhp").val(),
+							wp_pm_pump_flow_rate : $("#wp_pm_pump_flow_rate").val(),
+							wp_pm_motor_brand : $("#wp_pm_motor_brand").val(),
+							wp_pm_motor_type : $("#wp_pm_motor_type").val(),
+							wp_pm_motor_model : $("#wp_pm_motor_model").val(),
+							wp_pm_motor_sn : $("#wp_pm_motor_sn").val(),
+							wp_pm_motor_kwhp : $("#wp_pm_motor_kwhp").val(),
+							wp_pm_motor_voltamp : $("#wp_pm_motor_voltamp").val(),
+							wp_pm_motor_hz : $("#wp_pm_motor_hz").val(),
+							wp_pm_motor_ip : $("#wp_pm_motor_ip").val(),
+							wp_pm_motor_rpm : $("#wp_pm_motor_rpm").val(),
+							wp_pm_motor_de : $("#wp_pm_motor_de").val(),
+							wp_pm_motor_nde : $("#wp_pm_motor_nde").val(),
+							problem_type : $("#problem_type").val(),
+							voltage_of_controller_unit : $("input[name=voltage_of_controller_unit]:checked").val(),
+							amps_supplied_to_motor : $("input[name=voltage_of_controller_unit]:checked").val(),
+							electronics_protection_system : $("input[name=electronics_protection_system]:checked").val(),
+							insulation_of_solenoid : $("input[name=insulation_of_solenoid]:checked").val(),
+							gasket_and_oring_seal_cond : $("input[name=gasket_and_oring_seal_cond]:checked").val(),
+							resistance_of_solenoid : $("input[name=resistance_of_solenoid]:checked").val(),
+							tank_pressure : $("input[name=tank_pressure]:checked").val(),
+							measure_tank_pressure : $("#measure_tank_pressure").val(),
+							cond_of_other_comp : $("input[name=cond_of_other_comp]:checked").val(),
+							running_temp_vib : $("input[name=running_temp_vib]:checked").val(),
+							function_control : $("input[name=function_control]:checked").val(),
+							over_load_setting : $("#over_load_setting").val(),
+							voltage_load_a : $("#voltage_load_a").val(),
+							voltage_load_b : $("#voltage_load_b").val(),
+							voltage_load_c : $("#voltage_load_c").val(),
+							voltage_load_d : $("#voltage_load_d").val(),
+							voltage_load_e : $("#voltage_load_e").val(),
+							voltage_load_f : $("#voltage_load_f").val(),
+							voltage_noload_a : $("#voltage_noload_a").val(),
+							voltage_noload_b : $("#voltage_noload_b").val(),
+							voltage_noload_c : $("#voltage_noload_c").val(),
+							voltage_noload_d : $("#voltage_noload_d").val(),
+							voltage_noload_e : $("#voltage_noload_e").val(),
+							voltage_noload_f : $("#voltage_noload_f").val(),
+							motor_amp_full_load_t1u : $("#motor_amp_full_load_t1u").val(),
+							motor_amp_full_load_t2v : $("#motor_amp_full_load_t2v").val(),
+							motor_amp_full_load_t3w : $("#motor_amp_full_load_t3w").val(),
+							motor_amp_no_load_t1u : $("#motor_amp_no_load_t1u").val(),
+							motor_amp_no_load_t2v : $("#motor_amp_no_load_t2v").val(),
+							motor_amp_no_load_t3w : $("#motor_amp_no_load_t3w").val(),
+							voltage_drop_across_starter_l1 : $("#voltage_drop_across_starter_l1").val(),
+							voltage_drop_across_starter_l2 : $("#voltage_drop_across_starter_l2").val(),
+							voltage_drop_across_starter_l3 : $("#voltage_drop_across_starter_l3").val(),
+							inspect_contactors : $("#inspect_contactors").val(),
+							check_electrical_connections : $("#check_electrical_connections").val(),
+							insulation_test_u1_v1 : $("#insulation_test_u1-v1").val(),
+							insulation_test_v1_w1 : $("#insulation_test_v1-w1").val(),
+							insulation_test_u1_w1 : $("#insulation_test_u1-w1").val(),
+							insulation_test_u1_g : $("#insulation_test_u1-g").val(),
+							insulation_test_v1_g : $("#insulation_test_v1-g").val(),
+							insulation_test_w1_g : $("#insulation_test_w1-g").val(),
+							resistant_test_u1_u2 : $("#resistant_test_u1-u2").val(),
+							resistant_test_v1_v2 : $("#resistant_test_v1-v2").val(),
+							resistant_test_w1_w2 : $("#resistant_test_w1-w2").val(),
+							motor_dev : $("#motor_dev").val(),
+							pump_dev : $("#pump_dev").val(),
+							motor_deh : $("#motor_deh").val(),
+							pump_deh : $("#pump_deh").val(),
+							motor_dea : $("#motor_dea").val(),
+							pump_dea : $("#pump_dea").val(),
+							motor_ndev : $("#motor_ndev").val(),
+							pump_ndev : $("#pump_ndev").val(),
+							motor_ndeh : $("#motor_ndeh").val(),
+							pump_ndeh : $("#pump_ndeh").val(),
+							motor_ndea : $("#motor_ndea").val(),
+							pump_ndea : $("#pump_ndea").val(),
+							motor_de_dbm : $("#motor_de_dbm").val(),
+							motor_de_dbc : $("#motor_de_dbc").val(),
+							motor_de_dbi : $("#motor_de_dbi").val(),
+							motor_nde_dbm : $("#motor_nde_dbm").val(),
+							motor_nde_dbc : $("#motor_nde_dbc").val(),
+							motor_nde_dbi : $("#motor_nde_dbi").val(),
+							pump_de_dbm : $("#pump_de_dbm").val(),
+							pump_de_dbc : $("#pump_de_dbc").val(),
+							pump_de_dbi : $("#pump_de_dbi").val(),
+							pump_nde_dbm : $("#pump_nde_dbm").val(),
+							pump_nde_dbc : $("#pump_nde_dbc").val(),
+							pump_nde_dbi : $("#pump_nde_dbi").val(),
+							part_change_ccn1 : $("#part_change_ccn1").val(),
+							part_change_name1 : $("#part_change_name1").val(),
+							part_change_qty1 : $("#part_change_qty1").val(),
+							part_change_date1 : $("#part_change_date1").val(),
+							part_change_ccn2 : $("#part_change_ccn2").val(),
+							part_change_name2 : $("#part_change_name2").val(),
+							part_change_qty2 : $("#part_change_qty2").val(),
+							part_change_date2 : $("#part_change_date2").val(),
+							part_change_ccn3 : $("#part_change_ccn3").val(),
+							part_change_name3 : $("#part_change_name3").val(),
+							part_change_qty3 : $("#part_change_qty3").val(),
+							part_change_date3 : $("#part_change_date3").val(),
+							part_change_ccn4 : $("#part_change_ccn4").val(),
+							part_change_name4 : $("#part_change_name4").val(),
+							part_change_qty4 : $("#part_change_qty4").val(),
+							part_change_date4 : $("#part_change_date4").val(),
+							part_change_ccn5 : $("#part_change_ccn5").val(),
+							part_change_name5 : $("#part_change_name5").val(),
+							part_change_qty5 : $("#part_change_qty5").val(),
+							part_change_date5 : $("#part_change_date5").val(),
+							part_change_ccn6 : $("#part_change_ccn6").val(),
+							part_change_name6 : $("#part_change_name6").val(),
+							part_change_qty6 : $("#part_change_qty6").val(),
+							part_change_date6 : $("#part_change_date6").val(),
+							part_change_ccn7 : $("#part_change_ccn7").val(),
+							part_change_name7 : $("#part_change_name7").val(),
+							part_change_qty7 : $("#part_change_qty7").val(),
+							part_change_date7 : $("#part_change_date7").val(),
+							part_change_ccn8 : $("#part_change_ccn8").val(),
+							part_change_name8 : $("#part_change_name8").val(),
+							part_change_qty8 : $("#part_change_qty8").val(),
+							part_change_date8 : $("#part_change_date8").val(),
+							part_change_ccn9 : $("#part_change_ccn9").val(),
+							part_change_name9 : $("#part_change_name9").val(),
+							part_change_qty9 : $("#part_change_qty9").val(),
+							part_change_date9 : $("#part_change_date9").val(),
+							part_change_ccn10 : $("#part_change_ccn10").val(),
+							part_change_name10 : $("#part_change_name10").val(),
+							part_change_qty10 : $("#part_change_qty10").val(),
+							part_change_date10 : $("#part_change_date10").val()
+				  }
+	}).done(function() {
+				alert( "Data Saved: " );
+	});
+}
+
+</script>
+<style>
+.custom-corners .ui-bar {
+  -webkit-border-top-left-radius: inherit;
+  border-top-left-radius: inherit;
+  -webkit-border-top-right-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+
+input[type="text"].ui-btn {
+	padding : 0;
+}
+@media all and (max-width: 45em) {
+	.ui-responsive .ui-block-a,
+	.ui-responsive .ui-block-b,
+	.ui-responsive .ui-block-c,
+	.ui-responsive .ui-block-d,
+	.ui-responsive .ui-block-e {
+		width: 100%;
+		float: none;
+	}
+}
+</style>
+</head>
+
+<body>
+<div data-role="page">
+    
+    <div data-role="header" data-theme="b" >
+    	<a href="../index.html" class="ui-btn ui-btn-icon-left ui-icon-back">Back</a>
+		<h1>Service Water Pump Division</h1>
+	</div><!-- /header -->
+    
+    <div role="main" class="ui-content">
+    <form method="post" id="form_water_pump2" action="water_pump2.html" class="form_water_pump2">
+    	<!-- Start Section General Information -->
+        <div class="ui-corner-all custom-corners">
+          <div class="ui-bar ui-bar-a">
+            <h3>General Information</h3>
+          </div>
+          <div class="ui-body ui-body-a">
+          	<div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Job No"><strong>* Job No</strong>:</label>
+                        <input type="text" name="job_no" id="job_no" value="">
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <label for="Date">Date:</label>
+                        <input type="text" data-role="date" name="work_date" id="work_date" value="">
+                    </div>
+                 </div>    
+          	 </div><!-- end grid-a -->
+             
+             <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Customer Name"><strong>Customer Name:</strong>:</label>
+                        <input type="text" name="customer_name" id="customer_name" value="">
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <label for="Customer Code">Customer Code:</label>
+                        <input type="text" name="cust_code" id="cust_code" value="">
+                    </div>
+                 </div>    
+          	 </div><!-- end grid-a -->
+             
+             <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Service Type"><strong>Service Type:</strong>:</label>
+                        <select name="service_type" id="service_type" data-native-menu="false">
+                        	<option>Choose...</option>
+                            <option value="Start Up">Start Up</option>
+                            <option value="Service Contract (PM)">Service Contract (PM)</option>
+                            <option value="Regular Visit (RV)">Regular Visit (RV)</option>
+                            <option value="Overhaul">Overhaul</option>
+                            <option value="No Charge / Rework">No Charge / Rework</option>
+                            <option value="Direct Service (Shop)">Direct Service (Shop)</option>
+                            <option value="Customer Visit">Customer Visit</option>
+                            <option value="Customer Training">Customer Training</option>
+                            <option value="Direct Service (Field)">Direct Service (Field)</option>
+                            <option value="Warranty Job">Warranty Job</option>
+                        </select>
+                    </div>
+                </div>
+          	 </div><!-- end grid-a -->
+             
+          </div>
+        </div> <!-- end ui-corner-all -->
+        <!-- End Section General Information -->
+        <br />
+        <!-- Start Water Pump Detail -->
+        <div class="ui-corner-all custom-corners">
+        	<div class="ui-bar ui-bar-a">
+                <h3>Water Pump Detail</h3>
+            </div>
+            <div class="ui-body ui-body-a">
+            	<div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Water Pump Brand"><b>Water Pump Brand :</b></label>
+                            <input type="text" name="wp_pm_pump_brand" id="wp_pm_pump_brand" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Type"><b>Type :</b></label>
+                            <input type="text" name="wp_pm_pump_type" id="wp_pm_pump_type" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Model"><b>Model :</b></label>
+                            <input type="text" name="wp_pm_pump_model" id="wp_pm_pump_model" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Serial No"><b>Serial No :</b></label>
+                            <input type="text" name="wp_pm_pump_sn" id="wp_pm_pump_sn" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Kw/Hp"><b>Kw/Hp :</b></label>
+                            <input type="text" name="wp_pm_pump_kwhp" id="wp_pm_pump_kwhp" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Flow Rate"><b>Flow Rate :</b></label>
+                            <input type="text" name="wp_pm_pump_flow_rate" id="wp_pm_pump_flow_rate" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Head"><b>Head :</b></label>
+                            <input type="text" name="wp_pm_pump_head" id="wp_pm_pump_head" value="" placeholder="">
+                        </div>
+                    </div>	
+                </div><!-- end grid-a -->
+                
+            </div>
+       	</div>
+        <br />
+        <!-- End Water Pump -->
+        
+        <!-- Start Motor -->
+        <div class="ui-corner-all custom-corners">
+        	<div class="ui-bar ui-bar-a">
+                <h3>Motor Detail</h3>
+            </div>
+            <div class="ui-body ui-body-a">
+            	<div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Motor Brand"><b>Motor Brand :</b></label>
+                            <input type="text" name="wp_pm_motor_brand" id="wp_pm_motor_brand" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Type"><b>Type :</b></label>
+                            <input type="text" name="wp_pm_motor_type" id="wp_pm_motor_type" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Model"><b>Model :</b></label>
+                            <input type="text" name="wp_pm_motor_model" id="wp_pm_motor_model" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Serial No"><b>Serial No :</b></label>
+                            <input type="text" name="wp_pm_motor_sn" id="wp_pm_motor_sn" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Kw/Hp"><b>Kw/Hp :</b></label>
+                            <input type="text" name="wp_pm_motor_kwhp" id="wp_pm_motor_kwhp" value="" placeholder="">
+                        </div>
+                    </div>	
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Volt"><b>Volt :</b></label>
+                            <input type="text" name="wp_pm_motor_voltamp" id="wp_pm_motor_voltamp" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Hz"><b>Hz :</b></label>
+                            <input type="text" name="wp_pm_motor_hz" id="wp_pm_motor_hz" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Ip"><b>Ip :</b></label>
+                            <input type="text" name="wp_pm_motor_ip" id="wp_pm_motor_ip" value="" placeholder="">
+                        </div>
+                    </div>	
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="RPM"><b>RPM :</b></label>
+                            <input type="text" name="wp_pm_motor_rpm" id="wp_pm_motor_rpm" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="DE"><b>DE :</b></label>
+                            <input type="text" name="wp_pm_motor_de" id="wp_pm_motor_de" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Ip"><b>NDE :</b></label>
+                            <input type="text" name="wp_pm_motor_nde" id="wp_pm_motor_nde" value="" placeholder="">
+                        </div>
+                    </div>	
+                </div><!-- end grid-a -->
+                
+            </div>
+       	</div>
+        <br />
+        <!-- End Water Pump -->
+        
+        <!-- Start Problem Description -->
+    	<div class="ui-corner-all custom-corners">
+        	<div class="ui-bar ui-bar-a">
+                <h3>Problem Description</h3>
+            </div>
+            <div class="ui-body ui-body-a">
+            	<div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Problem Type"><b>Problem Type :</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="problem_type" id="problem_type_1" value="Electronic Control">
+                                <label for="problem_type_1">Electronic Control</label>
+                                <input type="radio" name="problem_type" id="problem_type_2" value="Relay Control">
+                                <label for="problem_type_2">Relay Control</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.1 Voltage of controller unit"><b>1.1 Voltage of controller unit :</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="voltage_of_controller_unit" id="voltage_of_controller_unit_1" value="Normal">
+                                <label for="voltage_of_controller_unit_1">Normal</label>
+                                <input type="radio" name="voltage_of_controller_unit" id="voltage_of_controller_unit_2" value="Abnormal">
+                                <label for="voltage_of_controller_unit_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.2 Amps supplied to motor"><b>1.2 Amps supplied to motor :</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="amps_supplied_to_motor" id="amps_supplied_to_motor_1" value="Normal">
+                                <label for="amps_supplied_to_motor_1">Normal</label>
+                                <input type="radio" name="amps_supplied_to_motor" id="amps_supplied_to_motor_2" value="Abnormal">
+                                <label for="amps_supplied_to_motor_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.3 Electronics protection system"><b>1.3 Electronics protection system :</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="electronics_protection_system" id="electronics_protection_system_1" value="Normal">
+                                <label for="electronics_protection_system_1">Normal</label>
+                                <input type="radio" name="electronics_protection_system" id="electronics_protection_system_2" value="Abnormal">
+                                <label for="electronics_protection_system_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.4 Insulation of solenoid"><b>1.4 Insulation of solenoid:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="insulation_of_solenoid" id="insulation_of_solenoid_1" value="Normal">
+                                <label for="insulation_of_solenoid_1">Normal</label>
+                                <input type="radio" name="insulation_of_solenoid" id="insulation_of_solenoid_2" value="Abnormal">
+                                <label for="insulation_of_solenoid_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.5 Gasket and O-ring seal condition"><b>1.5 Gasket and O-ring seal condition:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="gasket_and_oring_seal_cond" id="gasket_and_oring_seal_cond_1" value="Normal">
+                                <label for="gasket_and_oring_seal_cond_1">Normal</label>
+                                <input type="radio" name="gasket_and_oring_seal_cond" id="gasket_and_oring_seal_cond_2" value="Abnormal">
+                                <label for="gasket_and_oring_seal_cond_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.6 Resistance of solenoid"><b>1.6 Resistance of solenoid:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="resistance_of_solenoid" id="resistance_of_solenoid_1" value="Normal">
+                                <label for="resistance_of_solenoid_1">Normal</label>
+                                <input type="radio" name="resistance_of_solenoid" id="resistance_of_solenoid_2" value="Abnormal">
+                                <label for="resistance_of_solenoid_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.7 Tank pressure"><b>1.7 Tank pressure:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="tank_pressure" id="tank_pressure_1" value="Normal">
+                                <label for="tank_pressure_1">Normal</label>
+                                <input type="radio" name="tank_pressure" id="tank_pressure_2" value="Abnormal">
+                                <label for="tank_pressure_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="State measured tank pressure"><b>State measured tank pressure:</b></label>
+                        	<input type="text" name="measure_tank_pressure" id="measure_tank_pressure" value="" placeholder="PSIG/BARG">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.8 Condition of other components"><b>1.8 Condition of other components:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="cond_of_other_comp" id="cond_of_other_comp_1" value="Normal">
+                                <label for="cond_of_other_comp_1">Normal</label>
+                                <input type="radio" name="cond_of_other_comp" id="cond_of_other_comp_2" value="Abnormal">
+                                <label for="cond_of_other_comp_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.9 Running temperature and vibration of pump"><b>1.9 Running temperature and vibration of pump:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="running_temp_vib" id="running_temp_vib_1" value="Normal">
+                                <label for="running_temp_vib_1">Normal</label>
+                                <input type="radio" name="running_temp_vib" id="running_temp_vib_2" value="Abnormal">
+                                <label for="running_temp_vib_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.10 Function of the control unit"><b>1.10 Function of the control unit:</b></label>
+                        	<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                            	<input type="radio" name="function_control" id="function_control_1" value="Normal">
+                                <label for="function_control_1">Normal</label>
+                                <input type="radio" name="function_control" id="function_control_2" value="Abnormal">
+                                <label for="function_control_2">Abnormal</label>
+                             </fieldset>
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="1.11 Over load setting (safety) "><b>1.11 Over load setting (safety) :</b></label>
+                        	<input type="text" name="over_load_setting" id="over_load_setting" value="" placeholder="A">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+           </div>	
+        </div>
+        <br />
+        <!-- End Problem Description -->
+         
+         <!-- Start Electrical Inspections #2-->
+    	<div class="ui-corner-all custom-corners">
+        	<div class="ui-bar ui-bar-a">
+                <h3>ELECTRICAL INSPECTION</h3>
+            </div>
+            <div class="ui-body ui-body-a">
+            	<div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Voltage (Full Load)"><b>Voltage (Full Load) :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_load_a" id="voltage_load_a" value="" placeholder="Voltage A">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_load_b" id="voltage_load_b" value="" placeholder="Voltage B">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_load_c" id="voltage_load_c" value="" placeholder="Voltage C">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_load_d" id="voltage_load_d" value="" placeholder="Voltage D">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_load_e" id="voltage_load_e" value="" placeholder="Voltage E">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_load_f" id="voltage_load_f" value="" placeholder="Voltage F">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Voltage (Full Load)"><b>Voltage (No Load) :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_noload_a" id="voltage_noload_a" value="" placeholder="Voltage A">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_noload_b" id="voltage_noload_b" value="" placeholder="Voltage B">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_noload_c" id="voltage_noload_c" value="" placeholder="Voltage C">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_noload_d" id="voltage_noload_d" value="" placeholder="Voltage D">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_noload_e" id="voltage_noload_e" value="" placeholder="Voltage E">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_noload_f" id="voltage_noload_f" value="" placeholder="Voltage F">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Motor Amperage (Full Load)"><b>Motor Amperage (Full Load) :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="motor_amp_full_load_t1u" id="motor_amp_full_load_t1u" value="" placeholder="T1/U">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="motor_amp_full_load_t2v" id="motor_amp_full_load_t2v" value="" placeholder="T2/V">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="motor_amp_full_load_t3w" id="motor_amp_full_load_t3w" value="" placeholder="T3/W">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Motor Amperage (No Load)"><b>Motor Amperage (No Load) :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="motor_amp_no_load_t1u" id="motor_amp_no_load_t1u" value="" placeholder="T1/U">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="motor_amp_no_load_t2v" id="motor_amp_no_load_t2v" value="" placeholder="T2/V">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="motor_amp_no_load_t3w" id="motor_amp_no_load_t3w" value="" placeholder="T3/W">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Voltage Drop Across starter"><b>Voltage Drop Across starter :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_drop_across_starter_l1" id="voltage_drop_across_starter_l1" value="" placeholder="L1">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_drop_across_starter_l2" id="voltage_drop_across_starter_l2" value="" placeholder="L2">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="voltage_drop_across_starter_l3" id="voltage_drop_across_starter_l3" value="" placeholder="L3">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Inspect Contactors"><b>Inspect Contactors :</b></label>
+                        	<input type="text" name="inspect_contactors" id="inspect_contactors" value="" placeholder="">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Check Electrical Connections "><b>Check Electrical Connections  :</b></label>
+                        	<input type="text" name="check_electrical_connections" id="check_electrical_connections" value="" placeholder="">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Insulation Test"><b>Insulation Test :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="insulation_test_u1-v1" id="insulation_test_u1-v1" value="" placeholder="U1-V1">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="insulation_test_v1-w1" id="insulation_test_v1-w1" value="" placeholder="V1-W1">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="insulation_test_u1-w1" id="insulation_test_u1-w1" value="" placeholder="U1-W1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="insulation_test_u1-g" id="insulation_test_u1-g" value="" placeholder="U1-G">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="insulation_test_v1-g" id="insulation_test_v1-g" value="" placeholder="V1-G">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="insulation_test_w1-g" id="insulation_test_w1-g" value="" placeholder="U1-G">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-body ui-body-d">
+                    	<label for="Resistant Test"><b>Resistant Test :</b></label>
+                        <div class="ui-grid-b ui-responsive">
+                        	<div class="ui-block-a">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="resistant_test_u1-u2" id="resistant_test_u1-u2" value="" placeholder="U1-U2">
+                                </div>
+                            </div>
+                            <div class="ui-block-b">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="resistant_test_v1-v2" id="resistant_test_v1-v2" value="" placeholder="V1-V2">
+                                </div>
+                            </div>
+                            <div class="ui-block-c">
+                            	<div class="ui-body ui-body-d">
+                        		<input type="text" name="resistant_test_w1-w2" id="resistant_test_w1-w2" value="" placeholder="W1-W2">
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+           		</div><!-- end grid-a -->
+                
+            </div>
+        </div>
+        <br />
+        <!-- End Electrical Description -->
+        
+        <!-- Start Vibration -->
+        <div class="ui-corner-all custom-corners">
+        	<div class="ui-bar ui-bar-a">
+            	<h3>VIBRATION (OVERALL)</h3>
+          	</div>
+            <div class="ui-body ui-body-a">
+            	<div class="ui-grid-a ui-responsive">
+                	<label for="DE (V)"><b>DE (V)  :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_dev" id="motor_dev" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_dev" id="pump_dev" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="DE (H) "><b>DE (H)   :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_deh" id="motor_deh" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_deh" id="pump_deh" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="DE (A) "><b>DE (A)   :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_dea" id="motor_dea" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_dea" id="pump_dea" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="NDE (V)"><b>NDE (V)  :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_ndev" id="motor_ndev" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_ndev" id="pump_ndev" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="NDE (H) "><b>NDE (H)   :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_ndeh" id="motor_ndeh" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_ndeh" id="pump_ndeh" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="NDE (A) "><b>NDE (A)   :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_ndea" id="motor_ndea" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_ndea" id="pump_dnea" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+             </div>
+        </div>
+        <br/>
+        <!-- End Vibration -->
+        
+        <!-- Start Shock Pluse -->
+        <div class="ui-corner-all custom-corners">
+        	<div class="ui-bar ui-bar-a">
+            	<h3>SHOCK PULSE MEASURE MENT.</h3>
+          	</div>
+            <div class="ui-body ui-body-a">
+            	<div class="ui-grid-a ui-responsive">
+                	<label for="DE dBm"><b>DE dBm :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_de_dbm" id="motor_de_dbm" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_de_dbm" id="pump_de_dbm" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="DE dBc"><b>DE dBc :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_de_dbc" id="motor_de_dbc" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_de_dbc" id="pump_de_dbc" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="DE dBi"><b>DE dBi :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_de_dbi" id="motor_de_dbi" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_de_dbi" id="pump_de_dbi" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="NDE dBm"><b>NDE dBm :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_nde_dbm" id="motor_nde_dbm" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_nde_dbm" id="pump_nde_dbm" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="NDE dBc"><b>NDE dBc :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_nde_dbc" id="motor_nde_dbc" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_nde_dbc" id="pump_nde_dbc" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<label for="NDE dBi "><b>NDE dBi :</b></label>
+                    <div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="motor_nde_dbi" id="motor_nde_dbi" value="" placeholder="Motor">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<input type="text" name="pump_nde_dbi" id="pump_nde_dbi" value="" placeholder="Pump">
+                        </div>
+                    </div>
+            	</div><!-- end grid-a -->
+                
+             </div>
+        </div>
+        <br/>
+        <!-- End Shock Pluse -->
+         
+        <!-- Start Section Recommendation -->
+        <div class="ui-corner-all custom-corners">
+          <div class="ui-bar ui-bar-a">
+            <h3>Recommendation</h3>
+          </div>    
+          <div class="ui-body ui-body-a">
+          <div class="ui-grid-a ui-responsive">    
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <label for="textarea-1">Summary:</label>
+                        <textarea name="summary" id="summary"></textarea>
+                    </div>
+                </div>
+           </div><!-- end ui-grid-a-->  
+           </div>
+        </div><!-- end ui-corner-all --> 
+        <br />
+    	<!-- End Section Recomendation -->
+        
+        <!-- Start Section Spare Part Change -->
+        <div class="ui-corner-all custom-corners">
+            <div class="ui-bar ui-bar-a">
+                <h3>Spare Part Change</h3>
+            </div>
+            <div class="ui-body ui-body-a">
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change1"><b>1.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn1" id="part_change_ccn1" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change2">Part Name :</label>
+                            <input type="text" name="part_change_name1" id="part_change_name1" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty1" id="part_change_qty1" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change2">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date1" id="part_change_date1" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change2"><b>2.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn2" id="part_change_ccn2" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change2">Part Name :</label>
+                            <input type="text" name="part_change_name2" id="part_change_name2" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty2" id="part_change_qty2" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change2">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date2" id="part_change_date2" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change3"><b>3.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn3" id="part_change_ccn3" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change3">Part Name :</label>
+                            <input type="text" name="part_change_name3" id="part_change_name3" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty3" id="part_change_qty3" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change3">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date3" id="part_change_date3" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change4"><b>4.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn4" id="part_change_ccn4" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change4">Part Name :</label>
+                            <input type="text" name="part_change_name4" id="part_change_name4" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty4" id="part_change_qty4" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change4">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date4" id="part_change_date4" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change5"><b>5.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn5" id="part_change_ccn5" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change5">Part Name :</label>
+                            <input type="text" name="part_change_name5" id="part_change_name5" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty5" id="part_change_qty5" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change5">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date5" id="part_change_date5" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change6"><b>6.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn6" id="part_change_ccn6" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change6">Part Name :</label>
+                            <input type="text" name="part_change_name6" id="part_change_name6" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty6" id="part_change_qty6" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change6">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date6" id="part_change_date6" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change6"><b>7.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn7" id="part_change_ccn7" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change7">Part Name :</label>
+                            <input type="text" name="part_change_name7" id="part_change_name7" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty7" id="part_change_qty7" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change7">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date7" id="part_change_date7" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change8"><b>8.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn8" id="part_change_ccn8" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change8">Part Name :</label>
+                            <input type="text" name="part_change_name8" id="part_change_name8" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty8" id="part_change_qty8" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change8">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date8" id="part_change_date8" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change9"><b>9.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn9" id="part_change_ccn9" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change9">Part Name :</label>
+                            <input type="text" name="part_change_name9" id="part_change_name9" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty9" id="part_change_qty9" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change9">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date9" id="part_change_date9" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+                <div class="ui-grid-c ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change10"><b>10.</b> CCN :</label>
+                            <input type="text" name="part_change_ccn10" id="part_change_ccn10" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change10">Part Name :</label>
+                            <input type="text" name="part_change_name10" id="part_change_name10" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-c">
+                        <div class="ui-body ui-body-d">
+                            <label for="qty">Qty :</label>
+                            <input type="text" name="part_change_qty10" id="part_change_qty10" value="" placeholder="">
+                        </div>
+                    </div>
+                    <div class="ui-block-d">
+                        <div class="ui-body ui-body-d">
+                            <label for="part_change10">Change Date :</label>
+                            <input type="text" data-role="date" name="part_change_date10" id="part_change_date10" value="" placeholder="">
+                        </div>
+                    </div>		
+                </div>
+            </div>
+        </div>
+        <br />
+    	 <!-- End Section Spare Part Change -->
+
+        <!-- Start Section Signature -->
+        <div class="ui-corner-all custom-corners">
+          <div class="ui-bar ui-bar-a">
+            <h3>Signature</h3>
+          </div>    
+          <div class="ui-body ui-body-a">   
+            <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <div class="sigPad">
+                            <label for="name">Customer Name</label>
+                            <input type="text" name="name" id="name" class="name">
+                            <p class="drawItDesc">Draw your signature</p>
+                            <ul class="sigNav">
+                                <li class="drawIt"><a href="#draw-it" class="current">Customer</a></li>
+                                <li class="clearButton"><a href="#clear">Clear</a></li>
+                            </ul>
+                            <div class="sig sigWrapper">
+                              <div class="typed"></div>
+                              <canvas class="pad" id="wp_2_cus_pad" width="348" height="200"></canvas>
+                              <input type="hidden" name="output" class="output">
+                            </div>
+                            <br />
+                            <img id="WpsigCustomer_2" src="about:blank" alt="A close up of an elephant" />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <div class="sigPad">
+                            <label for="name">Technician Name</label>
+                            <input type="text" name="print_tech_name" id="print_tech_name" class="name">
+                            <p class="drawItDesc">Draw your signature</p>
+                            <ul class="sigNav">
+                                <li class="drawIt"><a href="#draw-it" class="current">Technician</a></li>
+                                <li class="clearButton"><a href="#clear">Clear</a></li>
+                            </ul>
+                            <div class="sig sigWrapper">
+                              <div class="typed"></div>
+                              <canvas class="pad" id="wp_2_tech_pad" width="348" height="200"></canvas>
+                              <input type="hidden" name="output2" class="output">
+                            </div>
+                            <br />
+                            <img id="WpsigTechnician_2" src="about:blank" alt="A close up of an elephant" />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <button type="submit">I accept the terms of this agreement.</button>	
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <input type="button" onclick="clear_data_localstorage()" value="Clear Data">
+                    </div>
+            	</div>
+            </div> 
+          </div>
+        </div>  
+        <!-- End Section Signature -->
+    </form>
+    <input type="button" onclick="savetomm()" value="Save To MM">
+    </div><!-- End Main -->
+    
+    
+    <div data-role="footer" data-theme="b">
+		<h4>Maintenance Management</h4>
+	</div><!-- /footer -->
+</div>
+</body>
+<script src="../js/jquery.signaturepad.js"></script>
+<script>
+    $(document).ready(function() {
+      $('.sigPad').signaturePad();
+    });
+</script>
+<script src="../assets/json2.min.js"></script>
+</html>
