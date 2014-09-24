@@ -14,8 +14,8 @@
 <script type="text/javascript">
 	
 $(function($){
-	var WpsigCustomer_3 = document.getElementById("WpsigCustomer_3");
-	var WpsigTechnician_3 = document.getElementById("WpsigTechnician_3");
+	var WpsigCustomer_6 = document.getElementById("WpsigCustomer_6");
+	var WpsigTechnician_6 = document.getElementById("WpsigTechnician_6");
 	var editor = document.getElementById("summary");
 	
 	var fillForm = function(form, data)
@@ -54,18 +54,18 @@ $(function($){
         // in order store it into localStorage
         localStorage["values"] = JSON.stringify(elements);
         data = form.serializeArray();
-        localStorage.setItem('wp_data3', JSON.stringify(data));
-		localStorage.setItem('service_type3', document.getElementById("service_type3").value);
+        localStorage.setItem('wp_data6', JSON.stringify(data));
+		localStorage.setItem('service_type6', document.getElementById("service_type6").value);
     }
 	
 	var saveFormDataSig = function(form)
 	{
-		localStorage.setItem('wp_sigCus_3', document.getElementById('wp_3_cus_pad').toDataURL("image/png"));
-		localStorage.setItem('wp_sigTech_3', document.getElementById('wp_3_tech_pad').toDataURL("image/png"));
+		localStorage.setItem('wp_sigCus_6', document.getElementById('wp_6_cus_pad').toDataURL("image/png"));
+		localStorage.setItem('wp_sigTech_6', document.getElementById('wp_6_tech_pad').toDataURL("image/png"));
 	}
 	
 	/* ตรวจสอบว่ามีข้อมูลเก็บไว้ใน localStorage แล้วหรือยัง? */
-    if(localStorage.getItem('wp_data3') != null){
+    if(localStorage.getItem('wp_data6') != null){
         var read_array = JSON.parse(localStorage["values"]);
 
         // check/uncheck checkboxes and radio buttons
@@ -75,36 +75,36 @@ $(function($){
                 check_text = v.text;
             $(check_id).prop("checked", check_value).checkboxradio("refresh");
         });
-        fillForm('.form_water_pump3', JSON.parse(localStorage.getItem('wp_data3')));
-		$("#sv_result3").text(localStorage.getItem('service_type3'));
+        fillForm('.form_water_pump6', JSON.parse(localStorage.getItem('wp_data6')));
+		$("#sv_result6").text(localStorage.getItem('service_type6'));
     }
 	
-	if(localStorage.getItem('wp_sigCus_3') != null){
-		WpsigCustomer_3.setAttribute("src",localStorage.getItem('wp_sigCus_3'));
+	if(localStorage.getItem('wp_sigCus_6') != null){
+		WpsigCustomer_6.setAttribute("src",localStorage.getItem('wp_sigCus_6'));
 	}
 	
-	if(localStorage.getItem('wp_sigTech_3') != null){
-		WpsigTechnician_3.setAttribute("src",localStorage.getItem('wp_sigTech_3'));
+	if(localStorage.getItem('wp_sigTech_6') != null){
+		WpsigTechnician_6.setAttribute("src",localStorage.getItem('wp_sigTech_6'));
 	}
 	
 	/* จะทำอะไร เมื่อ user กดปุ่ม submit ฟอร์ม? */
-    $('.form_water_pump3').on('submit', function(event){
+    $('.form_water_pump6').on('submit', function(event){
         /* บันทึกข้อมูลจากฟอร์มลงใน localStorage */
 			if($("#job_no").val()!= '' || $("#cust_code").val()!= '')
 			{
 				saveFormData($(this));
-				window.open('water_pump3.html','_self');
+				window.open('water_pump6.html','_self');
 			}
 			else
 			{
 				alert('!!! คุณกรอกข้อมูลไม่ครบ')
-				window.open('water_pump3.html','_self');
+				window.open('water_pump6.html','_self');
 			}
     });
 	
-	$('.form_water_pump_sig3').on('submit', function(event){
+	$('.form_water_pump_sig6').on('submit', function(event){
 		saveFormDataSig($(this));
-		window.open('water_pump3.html','_self');
+		window.open('water_pump6.html','_self');
 	});
 });
 
@@ -114,8 +114,8 @@ function savetomm()
 				  type: "POST",
 				  url: "http://192.168.0.11/mm/save_wp_to_mm.php",
 				  data: { 
-				  			sigCus: localStorage.getItem('wp_sigCus_3'),
-							sigTech : localStorage.getItem('wp_sigTech_3'),
+				  			sigCus: localStorage.getItem('wp_sigCus_6'),
+							sigTech : localStorage.getItem('wp_sigTech_6'),
 							wp_pm_job_no : $("#job_no").val(),
 							wp_pm_service_type : $('#service_type').val(),
 							wp_pm_cust_name : $("#customer_name").val(),
@@ -287,7 +287,7 @@ input[type="text"].ui-btn {
 	</div><!-- /header -->
     
     <div role="main" class="ui-content">
-    <form method="post" id="form_water_pump3" action="water_pump3.html" class="form_water_pump3">
+    <form method="post" id="form_water_pump6" action="water_pump6.html" class="form_water_pump6">
     	<!-- Start Section General Information -->
         <div class="ui-corner-all custom-corners">
           <div class="ui-bar ui-bar-a">
@@ -327,8 +327,8 @@ input[type="text"].ui-btn {
              <div class="ui-grid-a ui-responsive">
                 <div class="ui-block-a">
                     <div class="ui-body ui-body-d">
-                        <label for="Service Type"><strong>Service Type: (<span id="sv_result3" style="color:red"></span>)</strong></label>
-                        <select name="service_type3" id="service_type3" data-native-menu="false">
+                        <label for="Service Type"><strong>Service Type: (<span id="sv_result6" style="color:red"></span>)</strong></label>
+                        <select name="service_type6" id="service_type6" data-native-menu="false">
                         	<option>Choose...</option>
                             <option value="Start Up">Start Up</option>
                             <option value="Service Contract (PM)">Service Contract (PM)</option>
@@ -1081,6 +1081,7 @@ input[type="text"].ui-btn {
                 	<label for="NDE dBm"><b>NDE dBm :</b></label>
                     <div class="ui-block-a">
                     	<div class="ui-body ui-body-d">
+
                         	<input type="text" name="motor_nde_dbm" id="motor_nde_dbm" value="" placeholder="Motor">
                         </div>
                     </div>
@@ -1421,7 +1422,7 @@ input[type="text"].ui-btn {
                             <input type="button" onclick="clear_data_localstorage()" value="Clear Data">
                         </div>
                     </div>
-            	</div>
+            	</div> 
                 
             </div>
         </div>
@@ -1430,7 +1431,7 @@ input[type="text"].ui-btn {
         <!-- End Section Spare Part Change -->
 
         <!-- Start Section Signature -->
-        <form method="post" id="form_water_pump_sig3" action="water_pump3.html" class="form_water_pump_sig3">
+        <form method="post" id="form_water_pump_sig6" action="water_pump6.html" class="form_water_pump_sig6">
         <div class="ui-corner-all custom-corners">
           <div class="ui-bar ui-bar-a">
             <h3>Signature</h3>
@@ -1449,11 +1450,11 @@ input[type="text"].ui-btn {
                             </ul>
                             <div class="sig sigWrapper">
                               <div class="typed"></div>
-                              <canvas class="pad" id="wp_3_cus_pad" width="348" height="200"></canvas>
+                              <canvas class="pad" id="wp_6_cus_pad" width="348" height="200"></canvas>
                               <input type="hidden" name="output" class="output">
                             </div>
                             <br />
-                            <img id="WpsigCustomer_3" src="about:blank" alt="A close up of an elephant" />
+                            <img id="WpsigCustomer_6" src="about:blank" alt="A close up of an elephant" />
                             <br />
                         </div>
                     </div>
@@ -1470,16 +1471,17 @@ input[type="text"].ui-btn {
                             </ul>
                             <div class="sig sigWrapper">
                               <div class="typed"></div>
-                              <canvas class="pad" id="wp_3_tech_pad" width="348" height="200"></canvas>
+                              <canvas class="pad" id="wp_6_tech_pad" width="348" height="200"></canvas>
                               <input type="hidden" name="output2" class="output">
                             </div>
                             <br />
-                            <img id="WpsigTechnician_3" src="about:blank" alt="A close up of an elephant" />
+                            <img id="WpsigTechnician_6" src="about:blank" alt="A close up of an elephant" />
                             <br />
                         </div>
                     </div>
                 </div>
             </div>
+            
             <div class="ui-grid-a ui-responsive">
                 <div class="ui-block-a">
                     <div class="ui-body ui-body-d">
@@ -1491,12 +1493,11 @@ input[type="text"].ui-btn {
                         <input type="button" onclick="savetomm()" value="Save To MM">
                     </div>
             	</div>
-            </div>
+            </div> 
           </div>
         </div>  
-      <!-- End Section Signature -->
+        <!-- End Section Signature -->
     </form>
-    
     </div><!-- End Main -->
     
     

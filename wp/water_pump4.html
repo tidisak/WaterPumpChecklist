@@ -55,13 +55,17 @@ $(function($){
         localStorage["values"] = JSON.stringify(elements);
         data = form.serializeArray();
         localStorage.setItem('wp_data4', JSON.stringify(data));
-		localStorage.setItem('branch', document.getElementById("branch").value);
-		localStorage.setItem('wp_sigCus_4', document.getElementById('wp_4_cus_pad').toDataURL("image/png"));
-		localStorage.setItem('wp_sigTech_4', document.getElementById('wp_4_tech_pad').toDataURL("image/png"));
+		localStorage.setItem('service_type4', document.getElementById("service_type4").value);
     }
 	
+	var saveFormDataSig = function(form)
+	{
+		localStorage.setItem('wp_sigCus_4', document.getElementById('wp_4_cus_pad').toDataURL("image/png"));
+		localStorage.setItem('wp_sigTech_4', document.getElementById('wp_4_tech_pad').toDataURL("image/png"));
+	}
+	
 	/* ตรวจสอบว่ามีข้อมูลเก็บไว้ใน localStorage แล้วหรือยัง? */
-    if(localStorage.getItem('wp_data3') != null){
+    if(localStorage.getItem('wp_data4') != null){
         var read_array = JSON.parse(localStorage["values"]);
 
         // check/uncheck checkboxes and radio buttons
@@ -72,11 +76,16 @@ $(function($){
             $(check_id).prop("checked", check_value).checkboxradio("refresh");
         });
         fillForm('.form_water_pump4', JSON.parse(localStorage.getItem('wp_data4')));
-		$("#br_result").text(localStorage.getItem('branch'));
-		WpsigCustomer_4.setAttribute("src",localStorage.getItem('wp_sigCus_4'))
-		WpsigTechnician_4.setAttribute("src",localStorage.getItem('wp_sigTech_4'))
-		
+		$("#sv_result4").text(localStorage.getItem('service_type4'));
     }
+	
+	if(localStorage.getItem('wp_sigCus_4') != null){
+		WpsigCustomer_4.setAttribute("src",localStorage.getItem('wp_sigCus_4'));
+	}
+	
+	if(localStorage.getItem('wp_sigTech_4') != null){
+		WpsigTechnician_4.setAttribute("src",localStorage.getItem('wp_sigTech_4'));
+	}
 	
 	/* จะทำอะไร เมื่อ user กดปุ่ม submit ฟอร์ม? */
     $('.form_water_pump4').on('submit', function(event){
@@ -92,13 +101,18 @@ $(function($){
 				window.open('water_pump4.html','_self');
 			}
     });
+	
+	$('.form_water_pump_sig4').on('submit', function(event){
+		saveFormDataSig($(this));
+		window.open('water_pump4.html','_self');
+	});
 });
 
 function savetomm()
 {
 	$.ajax({
 				  type: "POST",
-				  url: "http://192.168.0.33/mm/save_wp_to_mm.php",
+				  url: "http://192.168.0.11/mm/save_wp_to_mm.php",
 				  data: { 
 				  			sigCus: localStorage.getItem('wp_sigCus_4'),
 							sigTech : localStorage.getItem('wp_sigTech_4'),
@@ -313,8 +327,8 @@ input[type="text"].ui-btn {
              <div class="ui-grid-a ui-responsive">
                 <div class="ui-block-a">
                     <div class="ui-body ui-body-d">
-                        <label for="Service Type"><strong>Service Type:</strong>:</label>
-                        <select name="service_type" id="service_type" data-native-menu="false">
+                        <label for="Service Type"><strong>Service Type: (<span id="sv_result4" style="color:red"></span>)</strong></label>
+                        <select name="service_type4" id="service_type4" data-native-menu="false">
                         	<option>Choose...</option>
                             <option value="Start Up">Start Up</option>
                             <option value="Service Contract (PM)">Service Contract (PM)</option>
@@ -1395,12 +1409,28 @@ input[type="text"].ui-btn {
                         </div>
                     </div>		
                 </div>
+                
+                <div class="ui-grid-a ui-responsive">
+                    <div class="ui-block-a">
+                        <div class="ui-body ui-body-d">
+                            <button type="submit">Save Data</button>	
+                        </div>
+                    </div>
+                    <div class="ui-block-b">
+                        <div class="ui-body ui-body-d">
+                            <input type="button" onclick="clear_data_localstorage()" value="Clear Data">
+                        </div>
+                    </div>
+            	</div> 
+                
             </div>
         </div>
         <br />
-    	 <!-- End Section Spare Part Change -->
+    	</form>
+        <!-- End Section Spare Part Change -->
 
         <!-- Start Section Signature -->
+        <form method="post" id="form_water_pump_sig4" action="water_pump4.html" class="form_water_pump_sig4">
         <div class="ui-corner-all custom-corners">
           <div class="ui-bar ui-bar-a">
             <h3>Signature</h3>
@@ -1459,7 +1489,7 @@ input[type="text"].ui-btn {
                 </div>
                 <div class="ui-block-b">
                     <div class="ui-body ui-body-d">
-                        <input type="button" onclick="clear_data_localstorage()" value="Clear Data">
+                        <input type="button" onclick="savetomm()" value="Save To MM">
                     </div>
             	</div>
             </div> 
@@ -1467,7 +1497,6 @@ input[type="text"].ui-btn {
         </div>  
         <!-- End Section Signature -->
     </form>
-    <input type="button" onclick="savetomm()" value="Save To MM">
     </div><!-- End Main -->
     
     
