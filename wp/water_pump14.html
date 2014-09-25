@@ -52,7 +52,7 @@ $(function($){
         // convert array into a string
 		
         // in order store it into localStorage
-        localStorage["values"] = JSON.stringify(elements);
+        localStorage["values_pump14"] = JSON.stringify(elements);
         data = form.serializeArray();
         localStorage.setItem('wp_data14', JSON.stringify(data));
 		localStorage.setItem('service_type14', document.getElementById("service_type14").value);
@@ -67,7 +67,7 @@ $(function($){
 	
 	/* ตรวจสอบว่ามีข้อมูลเก็บไว้ใน localStorage แล้วหรือยัง? */
     if(localStorage.getItem('wp_data14') != null){
-        var read_array = JSON.parse(localStorage["values"]);
+        var read_array = JSON.parse(localStorage["values_pump14"]);
 
         // check/uncheck checkboxes and radio buttons
         $.each(read_array, function (e, v) {
