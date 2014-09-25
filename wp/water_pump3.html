@@ -108,6 +108,15 @@ $(function($){
 	});
 });
 
+function clear_data_localstorage()
+{
+   	localStorage.removeItem('wp_data3');
+	localStorage.removeItem('values_pump3');
+	localStorage.removeItem('wp_sigCus_3');
+	localStorage.removeItem('wp_sigTech_3');
+	window.open('water_pump3.html','_self');
+}
+
 function savetomm()
 {
 	$.ajax({
