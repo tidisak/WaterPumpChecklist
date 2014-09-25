@@ -114,10 +114,10 @@ function savetomm()
 {
 	$.ajax({
 				  type: "POST",
-				  url: "http://192.168.0.11/mm/save_wp_to_mm.php",
+				  url: "http://intranet.premium.co.th/mm/save_wp_to_mm.php",
 				  data: { 
-				  			sigCus: localStorage.getItem('t30_sigCus_9'),
-							sigTech : localStorage.getItem('t30_sigTech_9'),
+				  			sigCus: localStorage.getItem('wp_sigCus_9'),
+							sigTech : localStorage.getItem('wp_sigTech_9'),
 							technician : $("#print_tech_name").val(),
 							customer : $("#name").val(),
 							wp_pm_job_no : $("#job_no").val(),
@@ -142,7 +142,7 @@ function savetomm()
 							wp_pm_motor_de : $("#wp_pm_motor_de").val(),
 							wp_pm_motor_nde : $("#wp_pm_motor_nde").val(),
 							summary_detail : $("#summary").val(),
-							problem_type : $("#problem_type").val(),
+							problem_type : $("input[name=problem_type]:checked").val(),
 							voltage_of_controller_unit : $("input[name=voltage_of_controller_unit]:checked").val(),
 							amps_supplied_to_motor : $("input[name=voltage_of_controller_unit]:checked").val(),
 							electronics_protection_system : $("input[name=electronics_protection_system]:checked").val(),
