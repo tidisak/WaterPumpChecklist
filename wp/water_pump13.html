@@ -52,7 +52,7 @@ $(function($){
         // convert array into a string
 		
         // in order store it into localStorage
-        localStorage["values_pump13"] = JSON.stringify(elements);
+        localStorage["values"] = JSON.stringify(elements);
         data = form.serializeArray();
         localStorage.setItem('wp_data13', JSON.stringify(data));
 		localStorage.setItem('service_type13', document.getElementById("service_type13").value);
@@ -61,13 +61,15 @@ $(function($){
 	
 	var saveFormDataSig = function(form)
 	{
+		localStorage.setItem('wp_signname_cus13', document.getElementById("name13").value);
+		localStorage.setItem('wp_signname_tech13', document.getElementById("print_tech_name13").value);
 		localStorage.setItem('wp_sigCus_13', document.getElementById('wp_13_cus_pad').toDataURL("image/png"));
 		localStorage.setItem('wp_sigTech_13', document.getElementById('wp_13_tech_pad').toDataURL("image/png"));
 	}
 	
 	/* ตรวจสอบว่ามีข้อมูลเก็บไว้ใน localStorage แล้วหรือยัง? */
     if(localStorage.getItem('wp_data13') != null){
-        var read_array = JSON.parse(localStorage["values_pump13"]);
+        var read_array = JSON.parse(localStorage["values"]);
 
         // check/uncheck checkboxes and radio buttons
         $.each(read_array, function (e, v) {
@@ -86,6 +88,13 @@ $(function($){
 	
 	if(localStorage.getItem('wp_sigTech_13') != null){
 		WpsigTechnician_13.setAttribute("src",localStorage.getItem('wp_sigTech_13'));
+	}
+	if(localStorage.getItem('wp_signname_cus13') != null){
+	  $("#name13").val(localStorage.getItem('wp_signname_cus13'));
+	}
+	
+	if(localStorage.getItem('wp_signname_tech13') != null){
+	  $("#print_tech_name13").val(localStorage.getItem('wp_signname_tech13'));
 	}
 	
 	/* จะทำอะไร เมื่อ user กดปุ่ม submit ฟอร์ม? */
@@ -110,25 +119,16 @@ $(function($){
 	
 });
 
-function clear_data_localstorage()
-{
-   	localStorage.removeItem('wp_data13');
-	localStorage.removeItem('values_pump13');
-	localStorage.removeItem('wp_sigCus_13');
-	localStorage.removeItem('wp_sigTech_13');
-	window.open('water_pump13.html','_self');
-}
-
 function savetomm()
 {
 	$.ajax({
 				  type: "POST",
-				  url: "http://intranet.premium.co.th/mm/save_wp_to_mm.php",
+				  url: "http://192.168.0.11/mm/save_wp_to_mm.php",
 				  data: { 
-				  			sigCus: localStorage.getItem('wp_sigCus_13'),
-							sigTech : localStorage.getItem('wp_sigTech_13'),
-							technician : $("#print_tech_name").val(),
-							customer : $("#name").val(),
+				  			sigCus: localStorage.getItem('t30_sigCus_13'),
+							sigTech : localStorage.getItem('t30_sigTech_13'),
+							technician : $("#print_tech_name13").val(),
+							customer : $("#name13").val(),
 							wp_pm_job_no : $("#job_no").val(),
 							wp_pm_service_type : $('#sv_result13').val(),
 							wp_pm_cust_name : $("#customer_name").val(),
@@ -151,7 +151,7 @@ function savetomm()
 							wp_pm_motor_de : $("#wp_pm_motor_de").val(),
 							wp_pm_motor_nde : $("#wp_pm_motor_nde").val(),
 							summary_detail : $("#summary").val(),
-							problem_type : $("input[name=problem_type]:checked").val(),
+							problem_type : $("#problem_type").val(),
 							voltage_of_controller_unit : $("input[name=voltage_of_controller_unit]:checked").val(),
 							amps_supplied_to_motor : $("input[name=voltage_of_controller_unit]:checked").val(),
 							electronics_protection_system : $("input[name=electronics_protection_system]:checked").val(),
@@ -259,7 +259,13 @@ function savetomm()
 							part_change_ccn10 : $("#part_change_ccn10").val(),
 							part_change_name10 : $("#part_change_name10").val(),
 							part_change_qty10 : $("#part_change_qty10").val(),
-							part_change_date10 : $("#part_change_date10").val()
+							part_change_date10 : $("#part_change_date10").val(),
+							wp_pm_started_work_at : $("#wp_pm_started_work_at").val(),
+							wp_pm_left_work_at : $("#wp_pm_left_work_at").val(),
+							wp_pm_arrived_work_at : $("#wp_pm_arrived_work_at").val(),
+							wp_pm_stop_work_at : $("#wp_pm_stop_work_at").val(),
+							wp_pm_left_worksite_at : $("#wp_pm_left_worksite_at").val(),
+							wp_pm_arrived_workshop_at : $("#wp_pm_arrived_workshop_at").val()
 				  }
 	}).done(function() {
 				alert( "Data Saved: " );
@@ -355,6 +361,30 @@ input[type="text"].ui-btn {
                             <option value="Direct Service (Field)">Direct Service (Field)</option>
                             <option value="Warranty Job">Warranty Job</option>
                         </select>
+                    </div>
+                </div>
+          	 </div><!-- end grid-a -->
+             
+             <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Started Work at"><strong>Started Work at: </strong></label>
+                        <input type="text" name="wp_pm_started_work_at" id="wp_pm_started_work_at" value="" placeholder="">
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <label for="Left Work at"><strong>Left Work at: </strong></label>
+                        <input type="text" name="wp_pm_left_work_at" id="wp_pm_left_work_at" value="" placeholder="">
+                    </div>
+                </div>
+          	 </div><!-- end grid-a -->
+             
+              <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Arrived Work at"><strong>Arrived Work at: </strong></label>
+                        <input type="text" name="wp_pm_arrived_work_at" id="wp_pm_arrived_work_at" value="" placeholder="">
                     </div>
                 </div>
           	 </div><!-- end grid-a -->
@@ -1424,8 +1454,41 @@ input[type="text"].ui-btn {
                         </div>
                     </div>		
                 </div>
-                
-                <div class="ui-grid-a ui-responsive">
+            </div>
+        </div>
+        <!-- End Section Spare Part Change -->
+        <br />
+        <!-- Start Section Finish Work -->
+        <div class="ui-corner-all custom-corners">
+          <div class="ui-bar ui-bar-a">
+            <h3>Finish Work</h3>
+          </div>
+          <div class="ui-body ui-body-a">
+              <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Stop Work at"><strong>Stop Work at: </strong></label>
+                        <input type="text" name="wp_pm_stop_work_at" id="wp_pm_stop_work_at" value="" placeholder="">
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="ui-body ui-body-d">
+                        <label for="Left Worksite at"><strong>Left Worksite at: </strong></label>
+                        <input type="text" name="wp_pm_left_worksite_at" id="wp_pm_left_worksite_at" value="" placeholder="">
+                    </div>
+                </div>
+          	 </div><!-- end grid-a -->
+             
+              <div class="ui-grid-a ui-responsive">
+                <div class="ui-block-a">
+                    <div class="ui-body ui-body-d">
+                        <label for="Arrived Workshop at"><strong>Arrived Workshop at: </strong></label>
+                        <input type="text" name="wp_pm_arrived_workshop_at" id="wp_pm_arrived_workshop_at" value="" placeholder="">
+                    </div>
+                </div>
+          	 </div><!-- end grid-a -->
+             
+             <div class="ui-grid-a ui-responsive">
                     <div class="ui-block-a">
                         <div class="ui-body ui-body-d">
                             <button type="submit">Save Data</button>	
@@ -1437,12 +1500,11 @@ input[type="text"].ui-btn {
                         </div>
                     </div>
             	</div> 
-                
-            </div>
-        </div>
+          </div>
+        </div> <!-- end ui-corner-all -->
+        <!-- End Section Finish work -->
         </form>
         <br />
-    	<!-- End Section Spare Part Change -->
 
         <!-- Start Section Signature -->
         <form method="post" id="form_water_pump_sig13" action="#" class="form_water_pump_sig13">
@@ -1456,7 +1518,7 @@ input[type="text"].ui-btn {
                     <div class="ui-body ui-body-d">
                         <div class="sigPad">
                             <label for="name">Customer Name</label>
-                            <input type="text" name="name" id="name" class="name">
+                            <input type="text" name="name" id="name13" class="name13">
                             <p class="drawItDesc">Draw your signature</p>
                             <ul class="sigNav">
                                 <li class="drawIt"><a href="#draw-it" class="current">Customer</a></li>
@@ -1477,7 +1539,7 @@ input[type="text"].ui-btn {
                     <div class="ui-body ui-body-d">
                         <div class="sigPad">
                             <label for="name">Technician Name</label>
-                            <input type="text" name="print_tech_name" id="print_tech_name" class="name">
+                            <input type="text" name="print_tech_name" id="print_tech_name13" class="print_tech_name13">
                             <p class="drawItDesc">Draw your signature</p>
                             <ul class="sigNav">
                                 <li class="drawIt"><a href="#draw-it" class="current">Technician</a></li>
