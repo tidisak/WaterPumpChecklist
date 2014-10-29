@@ -270,6 +270,17 @@ function savetomm()
 	});
 }
 
+function clear_data_localstorage()
+{
+	localStorage.removeItem('wp_data2');
+	localStorage.removeItem('wp_sigCus_2');
+	localStorage.removeItem('wp_sigTech_2');
+	localStorage.removeItem('wp_signname_cus2');
+	localStorage.removeItem('wp_signname_tech2');
+	localStorage.removeItem('service_type2');
+	window.open('water_pump2.html','_self');
+}
+
 </script>
 <style>
 .custom-corners .ui-bar {

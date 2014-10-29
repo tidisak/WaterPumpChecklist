@@ -269,6 +269,16 @@ function savetomm()
 				alert( "Data Saved: " );
 	});
 }
+function clear_data_localstorage()
+{
+	localStorage.removeItem('wp_data3');
+	localStorage.removeItem('wp_sigCus_3');
+	localStorage.removeItem('wp_sigTech_3');
+	localStorage.removeItem('wp_signname_cus3');
+	localStorage.removeItem('wp_signname_tech3');
+	localStorage.removeItem('service_type3');
+	window.open('water_pump3.html','_self');
+}
 
 </script>
 <style>
