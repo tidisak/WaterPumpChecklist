@@ -130,6 +130,7 @@ function savetomm()
 							sigTech : localStorage.getItem('t30_sigTech_10'),
 							technician : $("#print_tech_name").val(),
 							customer : $("#name").val(),
+							work_date : $("#work_date").val(),
 							wp_pm_job_no : $("#job_no").val(),
 							wp_pm_service_type : $('#sv_result10').val(),
 							wp_pm_cust_name : $("#customer_name").val(),
@@ -137,12 +138,16 @@ function savetomm()
 							wp_pm_pump_brand : $("#wp_pm_pump_brand").val(),
 							wp_pm_pump_type : $("#wp_pm_pump_type").val(),
 							wp_pm_pump_model : $("#wp_pm_pump_model").val(),
+							wp_pm_pee_pump_sn : $("#wp_pm_pee_pump_sn").val(),
+							wp_pm_cus_pump_sn : $("#wp_pm_cus_pump_sn").val(),
 							wp_pm_pump_sn : $("#wp_pm_pump_sn").val(),
 							wp_pm_pump_kwhp : $("#wp_pm_pump_kwhp").val(),
 							wp_pm_pump_flow_rate : $("#wp_pm_pump_flow_rate").val(),
 							wp_pm_motor_brand : $("#wp_pm_motor_brand").val(),
 							wp_pm_motor_type : $("#wp_pm_motor_type").val(),
 							wp_pm_motor_model : $("#wp_pm_motor_model").val(),
+							wp_pm_pee_motor_sn : $("#wp_pm_pee_motor_sn").val(),
+							wp_pm_cus_motor_sn : $("#wp_pm_cus_motor_sn").val(),
 							wp_pm_motor_sn : $("#wp_pm_motor_sn").val(),
 							wp_pm_motor_kwhp : $("#wp_pm_motor_kwhp").val(),
 							wp_pm_motor_voltamp : $("#wp_pm_motor_voltamp").val(),
@@ -271,17 +276,6 @@ function savetomm()
 	}).done(function() {
 				alert( "Data Saved: " );
 	});
-}
-
-function clear_data_localstorage()
-{
-	localStorage.removeItem('wp_data10');
-	localStorage.removeItem('wp_sigCus_10');
-	localStorage.removeItem('wp_sigTech_10');
-	localStorage.removeItem('wp_signname_cus10');
-	localStorage.removeItem('wp_signname_tech10');
-	localStorage.removeItem('service_type10');
-	window.open('water_pump10.html','_self');
 }
 
 </script>
@@ -429,40 +423,46 @@ input[type="text"].ui-btn {
                 <div class="ui-grid-a ui-responsive">
                 	<div class="ui-block-a">
                     	<div class="ui-body ui-body-d">
+                        	<label for="Serial No"><b>PE&E Serial No :</b></label>
+                            <input type="text" name="wp_pm_pee_pump_sn" id="wp_pm_pee_pump_sn" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
+                        	<label for="Serial No"><b>Customer Serial No :</b></label>
+                            <input type="text" name="wp_pm_cus_pump_sn" id="wp_pm_cus_pump_sn" value="" placeholder="">
+                        </div>
+                    </div>
+                </div><!-- end grid-a -->
+                
+                <div class="ui-grid-a ui-responsive">
+                	<div class="ui-block-a">
+                    	<div class="ui-body ui-body-d">
                         	<label for="Model"><b>Model :</b></label>
                             <input type="text" name="wp_pm_pump_model" id="wp_pm_pump_model" value="" placeholder="">
                         </div>
                     </div>	
                     <div class="ui-block-b">
                     	<div class="ui-body ui-body-d">
-                        	<label for="Serial No"><b>Serial No :</b></label>
-                            <input type="text" name="wp_pm_pump_sn" id="wp_pm_pump_sn" value="" placeholder="">
+                        	<label for="Kw/Hp"><b>Kw/Hp :</b></label>
+                            <input type="text" name="wp_pm_pump_kwhp" id="wp_pm_pump_kwhp" value="" placeholder="">
                         </div>
                     </div>
                 </div><!-- end grid-a -->
                 
                 <div class="ui-grid-a ui-responsive">
                 	<div class="ui-block-a">
-                    	<div class="ui-body ui-body-d">
-                        	<label for="Kw/Hp"><b>Kw/Hp :</b></label>
-                            <input type="text" name="wp_pm_pump_kwhp" id="wp_pm_pump_kwhp" value="" placeholder="">
-                        </div>
-                    </div>	
-                    <div class="ui-block-b">
                     	<div class="ui-body ui-body-d">
                         	<label for="Flow Rate"><b>Flow Rate :</b></label>
                             <input type="text" name="wp_pm_pump_flow_rate" id="wp_pm_pump_flow_rate" value="" placeholder="">
                         </div>
-                    </div>
-                </div><!-- end grid-a -->
-                
-                <div class="ui-grid-a ui-responsive">
-                	<div class="ui-block-a">
+                    </div>	
+                    <div class="ui-block-b">
                     	<div class="ui-body ui-body-d">
                         	<label for="Head"><b>Head :</b></label>
                             <input type="text" name="wp_pm_pump_head" id="wp_pm_pump_head" value="" placeholder="">
                         </div>
-                    </div>	
+                    </div>
                 </div><!-- end grid-a -->
                 
             </div>
@@ -494,14 +494,14 @@ input[type="text"].ui-btn {
                 <div class="ui-grid-a ui-responsive">
                 	<div class="ui-block-a">
                     	<div class="ui-body ui-body-d">
-                        	<label for="Model"><b>Model :</b></label>
-                            <input type="text" name="wp_pm_motor_model" id="wp_pm_motor_model" value="" placeholder="">
+                        	<label for="Serial No"><b>PE&E Serial No :</b></label>
+                            <input type="text" name="wp_pm_pee_motor_sn" id="wp_pm_pee_motor_sn" value="" placeholder="">
                         </div>
                     </div>	
                     <div class="ui-block-b">
                     	<div class="ui-body ui-body-d">
-                        	<label for="Serial No"><b>Serial No :</b></label>
-                            <input type="text" name="wp_pm_motor_sn" id="wp_pm_motor_sn" value="" placeholder="">
+                        	<label for="Serial No"><b>Customer Serial No :</b></label>
+                            <input type="text" name="wp_pm_cus_motor_sn" id="wp_pm_cus_motor_sn" value="" placeholder="">
                         </div>
                     </div>
                 </div><!-- end grid-a -->
@@ -509,10 +509,16 @@ input[type="text"].ui-btn {
                 <div class="ui-grid-a ui-responsive">
                 	<div class="ui-block-a">
                     	<div class="ui-body ui-body-d">
+                        	<label for="Model"><b>Model :</b></label>
+                            <input type="text" name="wp_pm_motor_model" id="wp_pm_motor_model" value="" placeholder="">
+                        </div>
+                    </div>	
+                    <div class="ui-block-b">
+                    	<div class="ui-body ui-body-d">
                         	<label for="Kw/Hp"><b>Kw/Hp :</b></label>
                             <input type="text" name="wp_pm_motor_kwhp" id="wp_pm_motor_kwhp" value="" placeholder="">
                         </div>
-                    </div>	
+                    </div>
                 </div><!-- end grid-a -->
                 
                 <div class="ui-grid-a ui-responsive">
@@ -566,7 +572,7 @@ input[type="text"].ui-btn {
             </div>
        	</div>
         <br />
-        <!-- End Water Pump -->
+        <!-- End Motor Pump -->
         
         <!-- Start Problem Description -->
     	<div class="ui-corner-all custom-corners">
@@ -1076,7 +1082,7 @@ input[type="text"].ui-btn {
                     </div>
                     <div class="ui-block-b">
                     	<div class="ui-body ui-body-d">
-                        	<input type="text" name="pump_ndea" id="pump_dnea" value="" placeholder="Pump">
+                        	<input type="text" name="pump_ndea" id="pump_ndea" value="" placeholder="Pump">
                         </div>
                     </div>
             	</div><!-- end grid-a -->
